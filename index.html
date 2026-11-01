@@ -303,6 +303,18 @@ function syncMusicButton() {
   musicBtn.title = playing ? "Pause background music" : "Play background music";
 }
 
+function pauseMusic() {
+  if (!music.paused) {
+    music.pause();
+    syncMusicButton();
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) pauseMusic();
+});
+window.addEventListener("pagehide", pauseMusic);
+
 function dismissScrollPrompt() {
   if (window.scrollY <= 8) return;
   scrollPrompt.classList.add("dismissed");
