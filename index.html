@@ -44,11 +44,7 @@
     <a href="#invitation-details">Invitation</a>
     <a href="#events">Events</a>
     <a href="#contact">Venue</a>
-<<<<<<< HEAD
     <a href="#rsvp">BLESS US</a>
-=======
-    <a href="#rsvp">RSVP</a>
->>>>>>> 90e2ad6a6a73d970146ffc815334be335f10f922
   </div>
 </nav>
 
@@ -163,9 +159,9 @@
 <!-- ================= RSVP ================= -->
 <section id="rsvp">
   <div class="wrap narrow reveal">
-    <h2 class="script" style="margin:0;font-size:clamp(48px,6vw,64px)">Kindly Respond</h2>
-    <p>Your presence is the greatest gift. Please let us know if you can join us by <span data-field="rsvpBy"></span>.</p>
-    <a class="btn" id="rsvpBtn" href="#" target="_blank" rel="noopener">RSVP</a>
+    <h2 class="script" style="margin:0;font-size:clamp(48px,6vw,64px)">Share Your Blessings</h2>
+    <p>Your love and blessings mean so much to us. Please share your blessings and write a word of prayer for us as we begin this beautiful new chapter together.</p>
+    <a class="btn" id="rsvpBtn" href="#" target="_blank" rel="noopener">Blessings &amp; Prayers</a>
   </div>
 </section>
 
@@ -181,8 +177,8 @@
 </footer>
 
 <!-- Background music (optional) – plays after "Tap to Open" -->
-<audio id="bgMusic" loop preload="none"></audio>
-<button id="musicBtn" aria-label="Pause music">
+<audio id="bgMusic" loop preload="metadata"></audio>
+<button id="musicBtn" aria-label="Play background music" title="Play background music">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
 </button>
 
@@ -200,13 +196,13 @@ const WEDDING = {
 
   // Wedding date & time (YYYY-MM-DDTHH:MM:SS) — used for the countdown,
   // the scratch circles and all the dates on the page.
-  dateTime: "2026-12-28T03:00:00",
+  dateTime: "2026-12-28T15:00:00",
   timeZone: "+05:30",           // India = +05:30
 
   ceremony: {
-    venue:   "KPL Garden",
-    address: "Vijayawada Club Rd, Tadepalle, Andhra Pradesh 522501",
-    phone:   "+91 00000 00000",
+    venue:   "Kondapavuluri Gardens",
+    address: "Vijayawada Club Rd, Tadepalle, Andhra Pradesh",
+    phone:   "+91 8142414353",
     mapLink: "https://maps.app.goo.gl/Qx7F8LjF2C4PEPLE7"                 // Paste a Google Maps link, or leave "" to search by venue name
   },
 
@@ -214,8 +210,8 @@ const WEDDING = {
     date:    "Saturday, 02 January 2027",                // Leave "" if same day as the wedding, or e.g. "Sunday, 20 December 2026"
     time:    "12:00 PM onwards",
     venue:   "S K Socials",
-    address: "Jalda A Block",
-    phone:   "+91 00000 00000",
+    address: "Jalda A Block, Rourkela, Odisha",
+    phone:   "+91 8917406338",
     mapLink: ""
   },
 
@@ -223,7 +219,7 @@ const WEDDING = {
   rsvpWhatsApp: "918895868112", // WhatsApp number with country code, no + or spaces. Leave "" to use email.
   rsvpEmail:    "monica.aind92@gmail.com",
 
-  music: "D:/Monica/Monica/Wedding-docs/e-invitation/satpin-wed-02/audio/great-is-thy-faithfulness.mp3"       // Put your song file here, or "" for no music
+  music: "audio/great-is-thy-faithfulness.mp3" // Relative path; set to "" to disable music
 };
 /* ======================= END OF EDITABLE PART ======================= */
 
@@ -279,7 +275,7 @@ setupVenue("ceremony");
 setupVenue("reception");
 
 /* RSVP button: WhatsApp if a number is given, otherwise email */
-const rsvpMsg = `Hi! I'd love to attend the wedding of ${WEDDING.groom} & ${WEDDING.bride}.`;
+const rsvpMsg = `Wishing you both a lifetime of love and happiness! My prayers and blessings are with you as you begin this beautiful new chapter together.`;
 document.getElementById("rsvpBtn").href = WEDDING.rsvpWhatsApp
   ? `https://wa.me/${WEDDING.rsvpWhatsApp}?text=${encodeURIComponent(rsvpMsg)}`
   : `mailto:${WEDDING.rsvpEmail}?subject=${encodeURIComponent("RSVP - Wedding")}&body=${encodeURIComponent(rsvpMsg)}`;
@@ -289,16 +285,40 @@ document.getElementById("rsvpBtn").href = WEDDING.rsvpWhatsApp
 const cover = document.getElementById("cover");
 const music = document.getElementById("bgMusic");
 const musicBtn = document.getElementById("musicBtn");
-if (WEDDING.music) music.src = WEDDING.music;
+if (WEDDING.music) {
+  music.src = WEDDING.music;
+  musicBtn.classList.add("show", "paused");
+}
+
+function syncMusicButton() {
+  const playing = !music.paused;
+  musicBtn.classList.toggle("paused", !playing);
+  musicBtn.setAttribute("aria-label", playing ? "Pause background music" : "Play background music");
+  musicBtn.title = playing ? "Pause background music" : "Play background music";
+}
 
 document.getElementById("openBtn").addEventListener("click", () => {
   cover.classList.add("hide");
   document.body.classList.remove("locked");
-  if (WEDDING.music) music.play().then(() => musicBtn.classList.add("show")).catch(() => {});
+  document.body.classList.add("invitation-open");
+  spawnPetals(28);
+  if (WEDDING.music) {
+    music.play().then(syncMusicButton).catch(error => {
+      syncMusicButton();
+      console.error("Background music could not start:", error);
+    });
+  }
 });
 musicBtn.addEventListener("click", () => {
-  if (music.paused) { music.play(); musicBtn.classList.remove("paused"); musicBtn.setAttribute("aria-label", "Pause music"); }
-  else { music.pause(); musicBtn.classList.add("paused"); musicBtn.setAttribute("aria-label", "Play music"); }
+  if (music.paused) {
+    music.play().then(syncMusicButton).catch(error => {
+      syncMusicButton();
+      console.error("Background music could not start:", error);
+    });
+  } else {
+    music.pause();
+    syncMusicButton();
+  }
 });
 
 
@@ -308,6 +328,25 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: 0.15 });
 document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
+/* ---------- Gentle floating petals on page load ---------- */
+function spawnPetals(count = 12) {
+  const colors = ["#B5707E", "#E3CDD2", "#DCE3D2", "#8C2F45", "#FFFFFF"];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("span");
+    p.className = "petal";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.width = (8 + Math.random() * 10) + "px";
+    p.style.height = (10 + Math.random() * 12) + "px";
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty("--dx", (Math.random() * 220 - 110) + "px");
+    p.style.animationDuration = (5 + Math.random() * 6) + "s";
+    p.style.animationDelay = (Math.random() * 1.4) + "s";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 12000);
+  }
+}
+setTimeout(() => spawnPetals(18), 600);
+setInterval(() => spawnPetals(10), 7000);
 
 /* ---------- Scratch to reveal the date ---------- */
 let revealed = 0;
