@@ -280,7 +280,7 @@ setupVenue("ceremony");
 setupVenue("reception");
 
 /* RSVP button: WhatsApp if a number is given, otherwise email */
-const rsvpMsg = `Wishing you both a lifetime of love and happiness! My prayers and blessings are with you as you begin this beautiful new chapter together.`;
+const rsvpMsg = `Write your message`;
 document.getElementById("rsvpBtn").href = WEDDING.rsvpWhatsApp
   ? `https://wa.me/${WEDDING.rsvpWhatsApp}?text=${encodeURIComponent(rsvpMsg)}`
   : `mailto:${WEDDING.rsvpEmail}?subject=${encodeURIComponent("RSVP - Wedding")}&body=${encodeURIComponent(rsvpMsg)}`;
