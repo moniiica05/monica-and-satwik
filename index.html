@@ -37,6 +37,11 @@
   </div>
 </div>
 
+<div id="scrollPrompt" role="status" aria-live="polite" aria-hidden="true">
+  <span>Scroll down</span>
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v11m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+
 <!-- ================= NAVIGATION ================= -->
 <nav>
   <a href="#top" class="brand" data-field="monogram"></a>
@@ -161,7 +166,7 @@
   <div class="wrap narrow reveal">
     <h2 class="script" style="margin:0;font-size:clamp(48px,6vw,64px)">Share Your Blessings</h2>
     <p>Your love and blessings mean so much to us. Please share your blessings and write a word of prayer for us as we begin this beautiful new chapter together.</p>
-    <a class="btn" id="rsvpBtn" href="#" target="_blank" rel="noopener">Blessings &amp; Prayers</a>
+    <a class="btn" id="rsvpBtn" href="#" target="_blank" rel="noopener">Write a Message</a>
   </div>
 </section>
 
@@ -283,6 +288,7 @@ document.getElementById("rsvpBtn").href = WEDDING.rsvpWhatsApp
 
 /* ---------- Tap to open + music ---------- */
 const cover = document.getElementById("cover");
+const scrollPrompt = document.getElementById("scrollPrompt");
 const music = document.getElementById("bgMusic");
 const musicBtn = document.getElementById("musicBtn");
 if (WEDDING.music) {
@@ -297,10 +303,19 @@ function syncMusicButton() {
   musicBtn.title = playing ? "Pause background music" : "Play background music";
 }
 
+function dismissScrollPrompt() {
+  if (window.scrollY <= 8) return;
+  scrollPrompt.classList.add("dismissed");
+  scrollPrompt.setAttribute("aria-hidden", "true");
+  window.removeEventListener("scroll", dismissScrollPrompt);
+}
+
 document.getElementById("openBtn").addEventListener("click", () => {
   cover.classList.add("hide");
   document.body.classList.remove("locked");
   document.body.classList.add("invitation-open");
+  scrollPrompt.setAttribute("aria-hidden", "false");
+  window.addEventListener("scroll", dismissScrollPrompt, { passive: true });
   spawnPetals(28);
   if (WEDDING.music) {
     music.play().then(syncMusicButton).catch(error => {
